@@ -245,9 +245,27 @@ int main(int argc, char* argv[])
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
+        // set light
+        glm::vec3 lightColor = glm::vec3(1.0f);
+        lightColor.x = sin(glfwGetTime() * 0.20f);
+        lightColor.y = sin(glfwGetTime() * 0.7f);
+        lightColor.z = sin(glfwGetTime() * 1.3f);
+
+        glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+        glm::vec3 ambientColor = lightColor * glm::vec3(0.2f);
         // render container
         lightingShader.use();
 
+        lightingShader.setVec3("light.ambient",  ambientColor);
+        lightingShader.setVec3("light.diffuse",  diffuseColor); // 将光照调暗了一些以搭配场景
+        lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
+        lightingShader.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
+        lightingShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
+        lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        lightingShader.setFloat("material.shininess", 32.0f);
+        lightingShader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+        lightingShader.setVec3("lightPos",  lightPos);
+        lightingShader.setVec3("viewPos", camera.Position);
         // pass projection matrix to shader (note that in this case it could change every frame)
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         lightingShader.setMat4("projection", projection);
@@ -255,18 +273,6 @@ int main(int argc, char* argv[])
         // camera/view transformation
         glm::mat4 view = camera.GetViewMatrix();
         lightingShader.setMat4("view", view);
-        lightingShader.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
-        lightingShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); // 将光照调暗了一些以搭配场景
-        lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
-        lightingShader.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
-        lightingShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
-        lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-        lightingShader.setFloat("material.shininess", 32.0f);
-        lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        lightingShader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
-        lightingShader.setVec3("lightPos",  lightPos);
-        lightingShader.setVec3("viewPos", camera.Position);
-
         // render boxes
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++)
@@ -283,6 +289,7 @@ int main(int argc, char* argv[])
 
         // render light cube
         cubeShader.use();
+        cubeShader.setVec3("lightColor", lightColor);
         cubeShader.setMat4("projection", projection); 
         cubeShader.setMat4("view", view);
 
