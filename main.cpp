@@ -255,7 +255,13 @@ int main(int argc, char* argv[])
         // camera/view transformation
         glm::mat4 view = camera.GetViewMatrix();
         lightingShader.setMat4("view", view);
-
+        lightingShader.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+        lightingShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); // 将光照调暗了一些以搭配场景
+        lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
+        lightingShader.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
+        lightingShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
+        lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        lightingShader.setFloat("material.shininess", 32.0f);
         lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
         lightingShader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
         lightingShader.setVec3("lightPos",  lightPos);
@@ -323,12 +329,18 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
         // camera.ProcessKeyboard(BACKWARD, deltaTime);
         lightPos.y -= 0.01;
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         // camera.Position -= glm::normalize(glm::cross(camera.Front, camera.Up)) * deltaTime;
-        lightPos.x += 0.01;
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        // camera.Position += glm::normalize(glm::cross(camera.Front, camera.Up)) * deltaTime;
         lightPos.x -= 0.01;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        // camera.Position += glm::normalize(glm::cross(camera.Front, camera.Up)) * deltaTime;
+        lightPos.x += 0.01;
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        lightPos.z += 0.01;
+
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        lightPos.z -= 0.01;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -359,7 +371,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    // camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
